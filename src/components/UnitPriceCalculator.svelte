@@ -1,12 +1,12 @@
 <script>
   let products = [
-    { id: 1, name: '商品1', price: '', amount: '', memo: '' },
-    { id: 2, name: '商品2', price: '', amount: '', memo: '' }
+    { id: 1, name: '', price: '', amount: '', store: '' },
+    { id: 2, name: '', price: '', amount: '', store: '' }
   ];
   let nextId = 3;
 
   function addProduct() {
-    products = [...products, { id: nextId++, name: `商品${nextId}`, price: '', amount: '', memo: '' }];
+    products = [...products, { id: nextId++, name: '', price: '', amount: '', store: '' }];
   }
 
   function removeProduct(id) {
@@ -15,11 +15,20 @@
     }
   }
 
+  function getDisplayName(product) {
+    const parts = [];
+    if (product.name) parts.push(product.name);
+    if (product.amount) parts.push(`${product.amount}`);
+    if (product.store) parts.push(`(${product.store})`);
+    return parts.length > 0 ? parts.join(' ') : `商品${product.id}`;
+  }
+
   $: productsWithUnitPrice = products.map(product => ({
     ...product,
     unitPrice: product.price && product.amount
       ? (parseFloat(product.price) / parseFloat(product.amount)) * 100
-      : null
+      : null,
+    displayName: getDisplayName(product)
   }));
 
   $: sortedProducts = productsWithUnitPrice
@@ -39,26 +48,24 @@
 
 <div class="calculator">
   <h2>🏷️ 単価比較</h2>
-  <p class="description">複数の商品の単価を比較してお得な商品を見つけます</p>
+  <p class="description">容量違いや店舗違いの単価を比較してお得な選択肢を見つけます</p>
 
   <div class="products">
     {#each products as product, index (product.id)}
       <div class="card" class:best={bestProduct && product.id === bestProduct.id && productsWithUnitPrice[index].unitPrice !== null}>
         <div class="card-header">
-          <h3>{product.name}</h3>
+          <h3>{productsWithUnitPrice[index].displayName}</h3>
           {#if products.length > 2}
             <button class="remove-btn" on:click={() => removeProduct(product.id)} title="削除">×</button>
           {/if}
         </div>
         <div class="input-group">
-          <label for="price{product.id}">価格（円）</label>
+          <label for="name{product.id}">商品名</label>
           <input
-            id="price{product.id}"
-            type="number"
-            bind:value={product.price}
-            placeholder="例: 298"
-            min="0"
-            step="1"
+            id="name{product.id}"
+            type="text"
+            bind:value={product.name}
+            placeholder="例: コーラ"
           />
         </div>
         <div class="input-group">
@@ -73,12 +80,23 @@
           />
         </div>
         <div class="input-group">
-          <label for="memo{product.id}">メモ（店名など）</label>
+          <label for="store{product.id}">店名</label>
           <input
-            id="memo{product.id}"
+            id="store{product.id}"
             type="text"
-            bind:value={product.memo}
+            bind:value={product.store}
             placeholder="例: スーパーA"
+          />
+        </div>
+        <div class="input-group">
+          <label for="price{product.id}">価格（円）</label>
+          <input
+            id="price{product.id}"
+            type="number"
+            bind:value={product.price}
+            placeholder="例: 298"
+            min="0"
+            step="1"
           />
         </div>
         {#if productsWithUnitPrice[index].unitPrice}
@@ -96,8 +114,8 @@
   {#if comparison}
     <div class="result">
       <div class="result-label">最もお得なのは...</div>
-      <div class="result-value">🎉 {comparison.best.name}！</div>
-      <div class="result-detail">最も高い商品より約{comparison.diff}%お得です</div>
+      <div class="result-value">🎉 {comparison.best.displayName}！</div>
+      <div class="result-detail">最も高い選択肢より約{comparison.diff}%お得です</div>
     </div>
   {/if}
 
@@ -119,10 +137,7 @@
               {/if}
             </span>
             <div class="product-info">
-              <span class="product-name">{product.name}</span>
-              {#if product.memo}
-                <span class="product-memo">({product.memo})</span>
-              {/if}
+              <span class="product-name">{product.displayName}</span>
             </div>
             <span class="unit-price-display">¥{product.unitPrice.toFixed(2)} / 100</span>
           </div>
