@@ -44,6 +44,15 @@
         diff: (((sortedProducts[sortedProducts.length - 1].unitPrice - sortedProducts[0].unitPrice) / sortedProducts[sortedProducts.length - 1].unitPrice) * 100).toFixed(1)
       }
     : null;
+
+  function getRank(productId) {
+    const index = sortedProducts.findIndex(p => p.id === productId);
+    return index >= 0 ? index : -1;
+  }
+
+  function getUnitPrice(product) {
+    return productsWithUnitPrice.find(p => p.id === product.id)?.unitPrice;
+  }
 </script>
 
 <div class="calculator">
@@ -64,19 +73,19 @@
         </tr>
       </thead>
       <tbody>
-        {#each sortedProducts.length > 0 ? sortedProducts : productsWithUnitPrice as product, index (product.id)}
-          <tr class:best={index === 0 && sortedProducts.length > 0}>
+        {#each products as product (product.id)}
+          {@const rank = getRank(product.id)}
+          {@const unitPrice = getUnitPrice(product)}
+          <tr class:best={rank === 0}>
             <td class="rank-cell">
-              {#if sortedProducts.length > 0}
-                {#if index === 0}
-                  <span class="rank-medal">🥇</span>
-                {:else if index === 1}
-                  <span class="rank-medal">🥈</span>
-                {:else if index === 2}
-                  <span class="rank-medal">🥉</span>
-                {:else}
-                  <span class="rank-number">{index + 1}</span>
-                {/if}
+              {#if rank === 0}
+                <span class="rank-medal">🥇</span>
+              {:else if rank === 1}
+                <span class="rank-medal">🥈</span>
+              {:else if rank === 2}
+                <span class="rank-medal">🥉</span>
+              {:else if rank > 2}
+                <span class="rank-number">{rank + 1}</span>
               {/if}
             </td>
             <td>
@@ -116,8 +125,8 @@
               />
             </td>
             <td class="unit-price-cell">
-              {#if product.unitPrice}
-                <span class="unit-price-value">¥{product.unitPrice.toFixed(2)}</span>
+              {#if unitPrice}
+                <span class="unit-price-value">¥{unitPrice.toFixed(2)}</span>
               {:else}
                 <span class="unit-price-empty">-</span>
               {/if}
