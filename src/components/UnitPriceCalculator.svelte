@@ -1,35 +1,9 @@
 <script>
-  import { onMount } from 'svelte';
-  import { getQueryParams, updateQueryParam, encodeData, decodeData } from '../utils/urlParams.js';
-
-  // URLから初期データを読み込む
-  let initialProducts = [
+  let products = [
     { id: 1, name: '', price: '', amount: '', store: '' },
     { id: 2, name: '', price: '', amount: '', store: '' }
   ];
-  let initialNextId = 3;
-
-  if (typeof window !== 'undefined') {
-    const params = getQueryParams();
-    if (params.data) {
-      const decoded = decodeData(params.data);
-      if (decoded && decoded.products && Array.isArray(decoded.products)) {
-        initialProducts = decoded.products;
-        initialNextId = decoded.nextId || (Math.max(...decoded.products.map(p => p.id)) + 1);
-      }
-    }
-  }
-
-  let products = initialProducts;
-  let nextId = initialNextId;
-
-  // データが変更されたらURLを更新
-  $: if (typeof window !== 'undefined') {
-    const data = encodeData({ products, nextId });
-    if (data) {
-      updateQueryParam('data', data);
-    }
-  }
+  let nextId = 3;
 
   function addProduct() {
     products = [...products, { id: nextId++, name: '', price: '', amount: '', store: '' }];

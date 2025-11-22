@@ -1,13 +1,13 @@
 <script>
   import { writable } from 'svelte/store';
-  import { onMount } from 'svelte';
   import UnitPriceCalculator from './components/UnitPriceCalculator.svelte';
   import DiscountCalculator from './components/DiscountCalculator.svelte';
   import TaxCalculator from './components/TaxCalculator.svelte';
   import SplitBillCalculator from './components/SplitBillCalculator.svelte';
   import PointCalculator from './components/PointCalculator.svelte';
   import InvestmentCalculator from './components/InvestmentCalculator.svelte';
-  import { getQueryParams, updateQueryParam } from './utils/urlParams.js';
+
+  const activeTab = writable('unit-price');
 
   const tabs = [
     { id: 'unit-price', label: '単価比較', icon: '🏷️' },
@@ -17,24 +17,6 @@
     { id: 'point', label: 'ポイント', icon: '💳' },
     { id: 'investment', label: '投資', icon: '📈' }
   ];
-
-  // URLからタブを初期化
-  let initialTab = 'unit-price';
-  if (typeof window !== 'undefined') {
-    const params = getQueryParams();
-    if (params.tab && tabs.some(t => t.id === params.tab)) {
-      initialTab = params.tab;
-    }
-  }
-
-  const activeTab = writable(initialTab);
-
-  // activeTabが変更されたらURLを更新
-  activeTab.subscribe(value => {
-    if (typeof window !== 'undefined') {
-      updateQueryParam('tab', value);
-    }
-  });
 
   function setTab(tabId) {
     activeTab.set(tabId);

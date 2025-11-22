@@ -1,36 +1,8 @@
 <script>
-  import { getQueryParams, updateQueryParam, encodeData, decodeData } from '../utils/urlParams.js';
-
-  // URLから初期データを読み込む
-  let initialData = {
-    originalPrice: '',
-    discountType: 'percentage',
-    discountValue: '',
-    couponValue: ''
-  };
-
-  if (typeof window !== 'undefined') {
-    const params = getQueryParams();
-    if (params.data) {
-      const decoded = decodeData(params.data);
-      if (decoded) {
-        initialData = { ...initialData, ...decoded };
-      }
-    }
-  }
-
-  let originalPrice = initialData.originalPrice;
-  let discountType = initialData.discountType;
-  let discountValue = initialData.discountValue;
-  let couponValue = initialData.couponValue;
-
-  // データが変更されたらURLを更新
-  $: if (typeof window !== 'undefined') {
-    const data = encodeData({ originalPrice, discountType, discountValue, couponValue });
-    if (data) {
-      updateQueryParam('data', data);
-    }
-  }
+  let originalPrice = '';
+  let discountType = 'percentage'; // percentage or fixed
+  let discountValue = '';
+  let couponValue = '';
 
   $: discount = discountType === 'percentage'
     ? (parseFloat(originalPrice) || 0) * (parseFloat(discountValue) || 0) / 100

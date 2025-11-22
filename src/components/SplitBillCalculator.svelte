@@ -1,34 +1,7 @@
 <script>
-  import { getQueryParams, updateQueryParam, encodeData, decodeData } from '../utils/urlParams.js';
-
-  // URLから初期データを読み込む
-  let initialData = {
-    totalAmount: '',
-    numberOfPeople: '',
-    roundingMethod: 'up'
-  };
-
-  if (typeof window !== 'undefined') {
-    const params = getQueryParams();
-    if (params.data) {
-      const decoded = decodeData(params.data);
-      if (decoded) {
-        initialData = { ...initialData, ...decoded };
-      }
-    }
-  }
-
-  let totalAmount = initialData.totalAmount;
-  let numberOfPeople = initialData.numberOfPeople;
-  let roundingMethod = initialData.roundingMethod;
-
-  // データが変更されたらURLを更新
-  $: if (typeof window !== 'undefined') {
-    const data = encodeData({ totalAmount, numberOfPeople, roundingMethod });
-    if (data) {
-      updateQueryParam('data', data);
-    }
-  }
+  let totalAmount = '';
+  let numberOfPeople = '';
+  let roundingMethod = 'up'; // up, down, or fair
 
   $: perPerson = calculateSplit(totalAmount, numberOfPeople, roundingMethod);
 
