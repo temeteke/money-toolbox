@@ -1,34 +1,7 @@
 <script>
-  import { getQueryParams, updateQueryParam, encodeData, decodeData } from '../utils/urlParams.js';
-
-  // URLから初期データを読み込む
-  let initialData = {
-    purchaseAmount: '',
-    pointRate: '',
-    pointLimit: ''
-  };
-
-  if (typeof window !== 'undefined') {
-    const params = getQueryParams();
-    if (params.data) {
-      const decoded = decodeData(params.data);
-      if (decoded) {
-        initialData = { ...initialData, ...decoded };
-      }
-    }
-  }
-
-  let purchaseAmount = initialData.purchaseAmount;
-  let pointRate = initialData.pointRate;
-  let pointLimit = initialData.pointLimit;
-
-  // データが変更されたらURLを更新
-  $: if (typeof window !== 'undefined') {
-    const data = encodeData({ purchaseAmount, pointRate, pointLimit });
-    if (data) {
-      updateQueryParam('data', data);
-    }
-  }
+  let purchaseAmount = '';
+  let pointRate = '';
+  let pointLimit = '';
 
   $: amount = parseFloat(purchaseAmount) || 0;
   $: rate = parseFloat(pointRate) || 0;
