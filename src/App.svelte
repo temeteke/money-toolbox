@@ -4,6 +4,8 @@
   import DiscountCalculator from './components/DiscountCalculator.svelte';
   import TaxCalculator from './components/TaxCalculator.svelte';
   import SplitBillCalculator from './components/SplitBillCalculator.svelte';
+  import PointCalculator from './components/PointCalculator.svelte';
+  import InvestmentCalculator from './components/InvestmentCalculator.svelte';
 
   const activeTab = writable('unit-price');
 
@@ -11,7 +13,9 @@
     { id: 'unit-price', label: '単価比較', icon: '🏷️' },
     { id: 'discount', label: '割引計算', icon: '💰' },
     { id: 'tax', label: '税込/税抜', icon: '🧾' },
-    { id: 'split', label: '割り勘', icon: '🍽️' }
+    { id: 'split', label: '割り勘', icon: '🍽️' },
+    { id: 'point', label: 'ポイント', icon: '💳' },
+    { id: 'investment', label: '投資', icon: '📈' }
   ];
 
   function setTab(tabId) {
@@ -54,6 +58,10 @@
         <TaxCalculator />
       {:else if $activeTab === 'split'}
         <SplitBillCalculator />
+      {:else if $activeTab === 'point'}
+        <PointCalculator />
+      {:else if $activeTab === 'investment'}
+        <InvestmentCalculator />
       {/if}
     </div>
   </div>
