@@ -1,11 +1,19 @@
 <script>
   import { writable } from 'svelte/store';
+  import { recentTabs } from './lib/historyStore.js';
   import UnitPriceCalculator from './components/UnitPriceCalculator.svelte';
   import DiscountCalculator from './components/DiscountCalculator.svelte';
   import TaxCalculator from './components/TaxCalculator.svelte';
   import SplitBillCalculator from './components/SplitBillCalculator.svelte';
   import PointCalculator from './components/PointCalculator.svelte';
   import InvestmentCalculator from './components/InvestmentCalculator.svelte';
+  import HourlyWageCalculator from './components/HourlyWageCalculator.svelte';
+  import SavingsGoalCalculator from './components/SavingsGoalCalculator.svelte';
+  import SubscriptionCalculator from './components/SubscriptionCalculator.svelte';
+  import FuelCostCalculator from './components/FuelCostCalculator.svelte';
+  import MortgageLoanCalculator from './components/MortgageLoanCalculator.svelte';
+  import NetSalaryCalculator from './components/NetSalaryCalculator.svelte';
+  import FurusatoTaxCalculator from './components/FurusatoTaxCalculator.svelte';
 
   const activeTab = writable('unit-price');
 
@@ -15,11 +23,19 @@
     { id: 'tax', label: '税込/税抜', icon: '🧾' },
     { id: 'split', label: '割り勘', icon: '🍽️' },
     { id: 'point', label: 'ポイント', icon: '💳' },
-    { id: 'investment', label: '投資', icon: '📈' }
+    { id: 'investment', label: '投資', icon: '📈' },
+    { id: 'hourly-wage', label: '時給換算', icon: '⏱️' },
+    { id: 'savings-goal', label: '貯金目標', icon: '💰' },
+    { id: 'subscription', label: 'サブスク', icon: '📱' },
+    { id: 'fuel-cost', label: '移動コスト', icon: '🚗' },
+    { id: 'mortgage', label: '住宅ローン', icon: '🏠' },
+    { id: 'net-salary', label: '手取り給与', icon: '💴' },
+    { id: 'furusato', label: 'ふるさと納税', icon: '🎁' }
   ];
 
   function setTab(tabId) {
     activeTab.set(tabId);
+    recentTabs.addTab(tabId);
   }
 </script>
 
@@ -62,6 +78,20 @@
         <PointCalculator />
       {:else if $activeTab === 'investment'}
         <InvestmentCalculator />
+      {:else if $activeTab === 'hourly-wage'}
+        <HourlyWageCalculator />
+      {:else if $activeTab === 'savings-goal'}
+        <SavingsGoalCalculator />
+      {:else if $activeTab === 'subscription'}
+        <SubscriptionCalculator />
+      {:else if $activeTab === 'fuel-cost'}
+        <FuelCostCalculator />
+      {:else if $activeTab === 'mortgage'}
+        <MortgageLoanCalculator />
+      {:else if $activeTab === 'net-salary'}
+        <NetSalaryCalculator />
+      {:else if $activeTab === 'furusato'}
+        <FurusatoTaxCalculator />
       {/if}
     </div>
   </div>
