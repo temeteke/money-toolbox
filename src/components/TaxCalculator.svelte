@@ -1,8 +1,36 @@
 <script>
-  let price = '';
-  let taxRate = '10';
-  let mode = 'exclude'; // exclude (税抜) or include (税込)
-  let roundingMethod = 'round'; // round, floor, ceil
+  import { getQueryParams, updateQueryParam, encodeData, decodeData } from '../utils/urlParams.js';
+
+  // URLから初期データを読み込む
+  let initialData = {
+    price: '',
+    taxRate: '10',
+    mode: 'exclude',
+    roundingMethod: 'round'
+  };
+
+  if (typeof window !== 'undefined') {
+    const params = getQueryParams();
+    if (params.data) {
+      const decoded = decodeData(params.data);
+      if (decoded) {
+        initialData = { ...initialData, ...decoded };
+      }
+    }
+  }
+
+  let price = initialData.price;
+  let taxRate = initialData.taxRate;
+  let mode = initialData.mode;
+  let roundingMethod = initialData.roundingMethod;
+
+  // データが変更されたらURLを更新
+  $: if (typeof window !== 'undefined') {
+    const data = encodeData({ price, taxRate, mode, roundingMethod });
+    if (data) {
+      updateQueryParam('data', data);
+    }
+  }
 
   $: taxRateValue = parseFloat(taxRate) / 100;
 

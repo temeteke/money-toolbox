@@ -1,10 +1,40 @@
 <script>
-  let investmentType = 'lump-sum'; // 'lump-sum' or 'accumulation'
-  let initialAmount = '';
-  let monthlyPayment = '';
-  let annualRate = '';
-  let years = '';
-  let compoundFrequency = 'monthly'; // 'monthly' or 'yearly'
+  import { getQueryParams, updateQueryParam, encodeData, decodeData } from '../utils/urlParams.js';
+
+  // URLから初期データを読み込む
+  let initialData = {
+    investmentType: 'lump-sum',
+    initialAmount: '',
+    monthlyPayment: '',
+    annualRate: '',
+    years: '',
+    compoundFrequency: 'monthly'
+  };
+
+  if (typeof window !== 'undefined') {
+    const params = getQueryParams();
+    if (params.data) {
+      const decoded = decodeData(params.data);
+      if (decoded) {
+        initialData = { ...initialData, ...decoded };
+      }
+    }
+  }
+
+  let investmentType = initialData.investmentType;
+  let initialAmount = initialData.initialAmount;
+  let monthlyPayment = initialData.monthlyPayment;
+  let annualRate = initialData.annualRate;
+  let years = initialData.years;
+  let compoundFrequency = initialData.compoundFrequency;
+
+  // データが変更されたらURLを更新
+  $: if (typeof window !== 'undefined') {
+    const data = encodeData({ investmentType, initialAmount, monthlyPayment, annualRate, years, compoundFrequency });
+    if (data) {
+      updateQueryParam('data', data);
+    }
+  }
 
   // リアクティブ計算
   $: initial = parseFloat(initialAmount) || 0;
