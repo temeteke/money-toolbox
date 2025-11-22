@@ -26,7 +26,7 @@
   $: productsWithUnitPrice = products.map(product => ({
     ...product,
     unitPrice: product.price && product.amount
-      ? (parseFloat(product.price) / parseFloat(product.amount)) * 100
+      ? parseFloat(product.price) / parseFloat(product.amount)
       : null,
     displayName: getDisplayName(product)
   }));
@@ -68,7 +68,7 @@
           <th>容量</th>
           <th>店名</th>
           <th>価格（円）</th>
-          <th>単価（100あたり）</th>
+          <th>単価</th>
           <th class="action-col"></th>
         </tr>
       </thead>
