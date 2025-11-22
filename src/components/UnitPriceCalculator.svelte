@@ -1,126 +1,155 @@
 <script>
-  let productA = { name: '商品A', price: '', amount: '', unit: 'g' };
-  let productB = { name: '商品B', price: '', amount: '', unit: 'g' };
+  let products = [
+    { id: 1, name: '', price: '', amount: '', store: '' },
+    { id: 2, name: '', price: '', amount: '', store: '' }
+  ];
+  let nextId = 3;
 
-  $: unitPriceA = productA.price && productA.amount
-    ? (parseFloat(productA.price) / parseFloat(productA.amount)) * 100
-    : null;
+  function addProduct() {
+    products = [...products, { id: nextId++, name: '', price: '', amount: '', store: '' }];
+  }
 
-  $: unitPriceB = productB.price && productB.amount
-    ? (parseFloat(productB.price) / parseFloat(productB.amount)) * 100
-    : null;
+  function removeProduct(id) {
+    if (products.length > 2) {
+      products = products.filter(p => p.id !== id);
+    }
+  }
 
-  $: comparison = unitPriceA && unitPriceB
-    ? unitPriceA < unitPriceB
-      ? { winner: 'A', diff: ((unitPriceB - unitPriceA) / unitPriceB * 100).toFixed(1) }
-      : { winner: 'B', diff: ((unitPriceA - unitPriceB) / unitPriceA * 100).toFixed(1) }
+  function getDisplayName(product) {
+    const parts = [];
+    if (product.name) parts.push(product.name);
+    if (product.amount) parts.push(`${product.amount}`);
+    if (product.store) parts.push(`(${product.store})`);
+    return parts.length > 0 ? parts.join(' ') : `商品${product.id}`;
+  }
+
+  $: productsWithUnitPrice = products.map(product => ({
+    ...product,
+    unitPrice: product.price && product.amount
+      ? (parseFloat(product.price) / parseFloat(product.amount)) * 100
+      : null,
+    displayName: getDisplayName(product)
+  }));
+
+  $: sortedProducts = productsWithUnitPrice
+    .filter(p => p.unitPrice !== null)
+    .sort((a, b) => a.unitPrice - b.unitPrice);
+
+  $: bestProduct = sortedProducts.length > 0 ? sortedProducts[0] : null;
+
+  $: comparison = sortedProducts.length >= 2
+    ? {
+        best: sortedProducts[0],
+        worst: sortedProducts[sortedProducts.length - 1],
+        diff: (((sortedProducts[sortedProducts.length - 1].unitPrice - sortedProducts[0].unitPrice) / sortedProducts[sortedProducts.length - 1].unitPrice) * 100).toFixed(1)
+      }
     : null;
 </script>
 
 <div class="calculator">
   <h2>🏷️ 単価比較</h2>
-  <p class="description">どちらの商品がお得か比較します</p>
+  <p class="description">容量違いや店舗違いの単価を比較してお得な選択肢を見つけます</p>
 
   <div class="products">
-    <div class="card">
-      <h3>商品A</h3>
-      <div class="input-group">
-        <label for="priceA">価格（円）</label>
-        <input
-          id="priceA"
-          type="number"
-          bind:value={productA.price}
-          placeholder="例: 298"
-          min="0"
-          step="1"
-        />
-      </div>
-      <div class="input-row">
-        <div class="input-group" style="flex: 2;">
-          <label for="amountA">容量</label>
+    {#each products as product, index (product.id)}
+      <div class="card" class:best={bestProduct && product.id === bestProduct.id && productsWithUnitPrice[index].unitPrice !== null}>
+        <div class="card-header">
+          <h3>{productsWithUnitPrice[index].displayName}</h3>
+          {#if products.length > 2}
+            <button class="remove-btn" on:click={() => removeProduct(product.id)} title="削除">×</button>
+          {/if}
+        </div>
+        <div class="input-group">
+          <label for="name{product.id}">商品名</label>
           <input
-            id="amountA"
+            id="name{product.id}"
+            type="text"
+            bind:value={product.name}
+            placeholder="例: コーラ"
+          />
+        </div>
+        <div class="input-group">
+          <label for="amount{product.id}">容量</label>
+          <input
+            id="amount{product.id}"
             type="number"
-            bind:value={productA.amount}
+            bind:value={product.amount}
             placeholder="例: 500"
             min="0"
             step="0.1"
           />
         </div>
-        <div class="input-group" style="flex: 1;">
-          <label for="unitA">単位</label>
-          <select id="unitA" bind:value={productA.unit}>
-            <option value="g">g</option>
-            <option value="ml">ml</option>
-            <option value="個">個</option>
-          </select>
-        </div>
-      </div>
-      {#if unitPriceA}
-        <div class="unit-price">
-          <span class="label">100{productA.unit}あたり</span>
-          <span class="value">¥{unitPriceA.toFixed(2)}</span>
-        </div>
-      {/if}
-    </div>
-
-    <div class="vs">VS</div>
-
-    <div class="card">
-      <h3>商品B</h3>
-      <div class="input-group">
-        <label for="priceB">価格（円）</label>
-        <input
-          id="priceB"
-          type="number"
-          bind:value={productB.price}
-          placeholder="例: 398"
-          min="0"
-          step="1"
-        />
-      </div>
-      <div class="input-row">
-        <div class="input-group" style="flex: 2;">
-          <label for="amountB">容量</label>
+        <div class="input-group">
+          <label for="store{product.id}">店名</label>
           <input
-            id="amountB"
-            type="number"
-            bind:value={productB.amount}
-            placeholder="例: 1000"
-            min="0"
-            step="0.1"
+            id="store{product.id}"
+            type="text"
+            bind:value={product.store}
+            placeholder="例: スーパーA"
           />
         </div>
-        <div class="input-group" style="flex: 1;">
-          <label for="unitB">単位</label>
-          <select id="unitB" bind:value={productB.unit}>
-            <option value="g">g</option>
-            <option value="ml">ml</option>
-            <option value="個">個</option>
-          </select>
+        <div class="input-group">
+          <label for="price{product.id}">価格（円）</label>
+          <input
+            id="price{product.id}"
+            type="number"
+            bind:value={product.price}
+            placeholder="例: 298"
+            min="0"
+            step="1"
+          />
         </div>
+        {#if productsWithUnitPrice[index].unitPrice}
+          <div class="unit-price">
+            <span class="label">100あたり</span>
+            <span class="value">¥{productsWithUnitPrice[index].unitPrice.toFixed(2)}</span>
+          </div>
+        {/if}
       </div>
-      {#if unitPriceB}
-        <div class="unit-price">
-          <span class="label">100{productB.unit}あたり</span>
-          <span class="value">¥{unitPriceB.toFixed(2)}</span>
-        </div>
-      {/if}
-    </div>
+    {/each}
   </div>
+
+  <button class="add-btn" on:click={addProduct}>+ 商品を追加</button>
 
   {#if comparison}
     <div class="result">
-      <div class="result-label">お得なのは...</div>
-      <div class="result-value">🎉 商品{comparison.winner}！</div>
-      <div class="result-detail">約{comparison.diff}%お得です</div>
+      <div class="result-label">最もお得なのは...</div>
+      <div class="result-value">🎉 {comparison.best.displayName}！</div>
+      <div class="result-detail">最も高い選択肢より約{comparison.diff}%お得です</div>
+    </div>
+  {/if}
+
+  {#if sortedProducts.length > 1}
+    <div class="ranking">
+      <h3>ランキング</h3>
+      <div class="ranking-list">
+        {#each sortedProducts as product, index}
+          <div class="ranking-item" class:best={index === 0}>
+            <span class="rank">
+              {#if index === 0}
+                🥇
+              {:else if index === 1}
+                🥈
+              {:else if index === 2}
+                🥉
+              {:else}
+                {index + 1}位
+              {/if}
+            </span>
+            <div class="product-info">
+              <span class="product-name">{product.displayName}</span>
+            </div>
+            <span class="unit-price-display">¥{product.unitPrice.toFixed(2)} / 100</span>
+          </div>
+        {/each}
+      </div>
     </div>
   {/if}
 </div>
 
 <style>
   .calculator {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
   }
 
@@ -136,24 +165,54 @@
 
   .products {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
-    align-items: start;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
 
-  .vs {
-    font-weight: bold;
-    font-size: 1.25rem;
-    color: var(--primary-color);
-    align-self: center;
-    padding: 1rem 0.5rem;
+  .card {
+    position: relative;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .card.best {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
   }
 
   h3 {
     font-size: 1.25rem;
-    margin-bottom: 1rem;
+    margin: 0;
     color: var(--primary-color);
+  }
+
+  .remove-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .remove-btn:hover {
+    background: #cc0000;
   }
 
   .input-row {
@@ -182,15 +241,97 @@
     font-weight: bold;
   }
 
+  .add-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    transition: opacity 0.2s;
+  }
+
+  .add-btn:hover {
+    opacity: 0.9;
+  }
+
+  .ranking {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+  }
+
+  .ranking h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .ranking-item.best {
+    border-color: #ffd700;
+    background: #fffef0;
+  }
+
+  .rank {
+    font-size: 1.25rem;
+    min-width: 3rem;
+    text-align: center;
+  }
+
+  .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .product-name {
+    font-weight: 500;
+  }
+
+  .product-memo {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .unit-price-display {
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+
   @media (max-width: 768px) {
     .products {
       grid-template-columns: 1fr;
-      gap: 1rem;
     }
 
-    .vs {
-      text-align: center;
-      padding: 0.5rem;
+    .ranking-item {
+      flex-wrap: wrap;
+    }
+
+    .unit-price-display {
+      width: 100%;
+      text-align: right;
+      margin-left: 4rem;
     }
   }
 </style>
