@@ -68,7 +68,7 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2024 Money Toolbox</p>
+      <p>Money Toolbox · <a href="https://github.com/temeteke/money-toolbox" target="_blank" rel="noopener noreferrer">GitHub</a></p>
     </div>
   </footer>
 </main>
@@ -166,6 +166,17 @@
     font-size: 0.9rem;
     border-top: 1px solid var(--border-color);
     margin-top: 2rem;
+  }
+
+  footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  footer a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
   }
 
   @media (max-width: 640px) {
