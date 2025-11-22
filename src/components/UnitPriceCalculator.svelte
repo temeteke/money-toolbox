@@ -1,12 +1,12 @@
 <script>
   let products = [
-    { id: 1, name: '商品1', price: '', amount: '', unit: 'g' },
-    { id: 2, name: '商品2', price: '', amount: '', unit: 'g' }
+    { id: 1, name: '商品1', price: '', amount: '', memo: '' },
+    { id: 2, name: '商品2', price: '', amount: '', memo: '' }
   ];
   let nextId = 3;
 
   function addProduct() {
-    products = [...products, { id: nextId++, name: `商品${nextId}`, price: '', amount: '', unit: 'g' }];
+    products = [...products, { id: nextId++, name: `商品${nextId}`, price: '', amount: '', memo: '' }];
   }
 
   function removeProduct(id) {
@@ -61,30 +61,29 @@
             step="1"
           />
         </div>
-        <div class="input-row">
-          <div class="input-group" style="flex: 2;">
-            <label for="amount{product.id}">容量</label>
-            <input
-              id="amount{product.id}"
-              type="number"
-              bind:value={product.amount}
-              placeholder="例: 500"
-              min="0"
-              step="0.1"
-            />
-          </div>
-          <div class="input-group" style="flex: 1;">
-            <label for="unit{product.id}">単位</label>
-            <select id="unit{product.id}" bind:value={product.unit}>
-              <option value="g">g</option>
-              <option value="ml">ml</option>
-              <option value="個">個</option>
-            </select>
-          </div>
+        <div class="input-group">
+          <label for="amount{product.id}">容量</label>
+          <input
+            id="amount{product.id}"
+            type="number"
+            bind:value={product.amount}
+            placeholder="例: 500"
+            min="0"
+            step="0.1"
+          />
+        </div>
+        <div class="input-group">
+          <label for="memo{product.id}">メモ（店名など）</label>
+          <input
+            id="memo{product.id}"
+            type="text"
+            bind:value={product.memo}
+            placeholder="例: スーパーA"
+          />
         </div>
         {#if productsWithUnitPrice[index].unitPrice}
           <div class="unit-price">
-            <span class="label">100{product.unit}あたり</span>
+            <span class="label">100あたり</span>
             <span class="value">¥{productsWithUnitPrice[index].unitPrice.toFixed(2)}</span>
           </div>
         {/if}
@@ -119,8 +118,13 @@
                 {index + 1}位
               {/if}
             </span>
-            <span class="product-name">{product.name}</span>
-            <span class="unit-price-display">¥{product.unitPrice.toFixed(2)} / 100{product.unit}</span>
+            <div class="product-info">
+              <span class="product-name">{product.name}</span>
+              {#if product.memo}
+                <span class="product-memo">({product.memo})</span>
+              {/if}
+            </div>
+            <span class="unit-price-display">¥{product.unitPrice.toFixed(2)} / 100</span>
           </div>
         {/each}
       </div>
@@ -279,9 +283,20 @@
     text-align: center;
   }
 
-  .product-name {
+  .product-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .product-name {
     font-weight: 500;
+  }
+
+  .product-memo {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
   }
 
   .unit-price-display {
