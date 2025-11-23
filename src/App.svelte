@@ -17,6 +17,9 @@
   import CreditCardRewardsCalculator from './components/CreditCardRewardsCalculator.svelte';
   import LoanRefinancingCalculator from './components/LoanRefinancingCalculator.svelte';
   import FIRECalculator from './components/FIRECalculator.svelte';
+  import MedicalDeductionCalculator from './components/MedicalDeductionCalculator.svelte';
+  import BusinessIncomeCalculator from './components/BusinessIncomeCalculator.svelte';
+  import TaxFilingChecker from './components/TaxFilingChecker.svelte';
   import MoreFeaturesModal from './components/MoreFeaturesModal.svelte';
 
   const activeTab = writable('unit-price');
@@ -36,6 +39,9 @@
     { id: 'card-rewards', label: 'カード還元率比較', icon: '💳' },
     { id: 'fire', label: 'FIRE計算', icon: '🔥' },
     { id: 'loan-refinancing', label: 'ローン借り換え', icon: '🔄' },
+    { id: 'medical-deduction', label: '医療費控除', icon: '💊' },
+    { id: 'business-income', label: '事業所得計算', icon: '📊' },
+    { id: 'tax-filing-checker', label: '確定申告チェック', icon: '✅' },
     { id: 'hourly-wage', label: '時給換算', icon: '⏱️' },
     { id: 'savings-goal', label: '貯金目標', icon: '💰' },
     { id: 'subscription', label: 'サブスク', icon: '📱' },
@@ -131,6 +137,12 @@
         <LoanRefinancingCalculator />
       {:else if $activeTab === 'fire'}
         <FIRECalculator />
+      {:else if $activeTab === 'medical-deduction'}
+        <MedicalDeductionCalculator />
+      {:else if $activeTab === 'business-income'}
+        <BusinessIncomeCalculator />
+      {:else if $activeTab === 'tax-filing-checker'}
+        <TaxFilingChecker />
       {/if}
     </div>
   </div>
