@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { recentTabs } from './lib/historyStore.js';
   import UnitPriceCalculator from './components/UnitPriceCalculator.svelte';
@@ -20,6 +21,7 @@
   import MedicalDeductionCalculator from './components/MedicalDeductionCalculator.svelte';
   import BusinessIncomeCalculator from './components/BusinessIncomeCalculator.svelte';
   import TaxFilingChecker from './components/TaxFilingChecker.svelte';
+  import WithholdingSlipAnalyzer from './components/WithholdingSlipAnalyzer.svelte';
   import MoreFeaturesModal from './components/MoreFeaturesModal.svelte';
 
   const activeTab = writable('unit-price');
@@ -36,6 +38,7 @@
 
   // その他の機能（モーダルに表示）
   const moreFeatures = [
+    { id: 'withholding-slip', label: '源泉徴収票分析', icon: '📄' },
     { id: 'card-rewards', label: 'カード還元率比較', icon: '💳' },
     { id: 'fire', label: 'FIRE計算', icon: '🔥' },
     { id: 'loan-refinancing', label: 'ローン借り換え', icon: '🔄' },
@@ -66,6 +69,17 @@
     setTab(featureId);
     showMoreModal = false;
   }
+
+  // カスタムイベントリスナー（他のコンポーネントからのタブ切り替え）
+  onMount(() => {
+    const handleChangeTab = (event) => {
+      setTab(event.detail);
+    };
+    window.addEventListener('changeTab', handleChangeTab);
+    return () => {
+      window.removeEventListener('changeTab', handleChangeTab);
+    };
+  });
 </script>
 
 <main>
@@ -143,6 +157,8 @@
         <BusinessIncomeCalculator />
       {:else if $activeTab === 'tax-filing-checker'}
         <TaxFilingChecker />
+      {:else if $activeTab === 'withholding-slip'}
+        <WithholdingSlipAnalyzer />
       {/if}
     </div>
   </div>
