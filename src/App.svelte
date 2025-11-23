@@ -14,16 +14,22 @@
   import MortgageLoanCalculator from './components/MortgageLoanCalculator.svelte';
   import NetSalaryCalculator from './components/NetSalaryCalculator.svelte';
   import FurusatoTaxCalculator from './components/FurusatoTaxCalculator.svelte';
+  import MoreFeaturesModal from './components/MoreFeaturesModal.svelte';
 
   const activeTab = writable('unit-price');
 
-  const tabs = [
+  // よく使う機能（メインタブに表示）
+  const mainTabs = [
     { id: 'unit-price', label: '単価比較', icon: '🏷️' },
     { id: 'discount', label: '割引計算', icon: '💰' },
     { id: 'tax', label: '税込/税抜', icon: '🧾' },
     { id: 'split', label: '割り勘', icon: '🍽️' },
     { id: 'point', label: 'ポイント', icon: '💳' },
-    { id: 'investment', label: '投資', icon: '📈' },
+    { id: 'investment', label: '投資', icon: '📈' }
+  ];
+
+  // その他の機能（モーダルに表示）
+  const moreFeatures = [
     { id: 'hourly-wage', label: '時給換算', icon: '⏱️' },
     { id: 'savings-goal', label: '貯金目標', icon: '💰' },
     { id: 'subscription', label: 'サブスク', icon: '📱' },
@@ -33,9 +39,20 @@
     { id: 'furusato', label: 'ふるさと納税', icon: '🎁' }
   ];
 
+  let showMoreModal = false;
+
   function setTab(tabId) {
     activeTab.set(tabId);
     recentTabs.addTab(tabId);
+  }
+
+  function handleMoreClick() {
+    showMoreModal = true;
+  }
+
+  function handleFeatureSelect(featureId) {
+    setTab(featureId);
+    showMoreModal = false;
   }
 </script>
 
@@ -50,7 +67,7 @@
   <nav class="tabs">
     <div class="container">
       <div class="tab-list">
-        {#each tabs as tab}
+        {#each mainTabs as tab}
           <button
             class="tab"
             class:active={$activeTab === tab.id}
@@ -60,9 +77,19 @@
             <span class="tab-label">{tab.label}</span>
           </button>
         {/each}
+        <button class="tab more-button" on:click={handleMoreClick}>
+          <span class="tab-icon">⋯</span>
+          <span class="tab-label">もっと見る</span>
+        </button>
       </div>
     </div>
   </nav>
+
+  <MoreFeaturesModal
+    bind:isOpen={showMoreModal}
+    features={moreFeatures}
+    onSelect={handleFeatureSelect}
+  />
 
   <div class="container">
     <div class="content">
@@ -181,6 +208,16 @@
 
   .tab-label {
     font-size: 0.85rem;
+  }
+
+  .more-button {
+    background: var(--background);
+    border: 1px dashed var(--border-color);
+  }
+
+  .more-button:hover {
+    background: var(--surface);
+    border-color: var(--primary-color);
   }
 
   .content {
