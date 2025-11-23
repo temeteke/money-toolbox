@@ -149,8 +149,8 @@
   }
 
   .tab {
-    flex: 1;
-    min-width: 120px;
+    flex: 0 0 auto;
+    min-width: 100px;
     padding: 1rem 0.75rem;
     border: none;
     background: transparent;
