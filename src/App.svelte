@@ -14,6 +14,9 @@
   import MortgageLoanCalculator from './components/MortgageLoanCalculator.svelte';
   import NetSalaryCalculator from './components/NetSalaryCalculator.svelte';
   import FurusatoTaxCalculator from './components/FurusatoTaxCalculator.svelte';
+  import CreditCardRewardsCalculator from './components/CreditCardRewardsCalculator.svelte';
+  import LoanRefinancingCalculator from './components/LoanRefinancingCalculator.svelte';
+  import FIRECalculator from './components/FIRECalculator.svelte';
   import MoreFeaturesModal from './components/MoreFeaturesModal.svelte';
 
   const activeTab = writable('unit-price');
@@ -30,6 +33,9 @@
 
   // その他の機能（モーダルに表示）
   const moreFeatures = [
+    { id: 'card-rewards', label: 'カード還元率比較', icon: '💳' },
+    { id: 'fire', label: 'FIRE計算', icon: '🔥' },
+    { id: 'loan-refinancing', label: 'ローン借り換え', icon: '🔄' },
     { id: 'hourly-wage', label: '時給換算', icon: '⏱️' },
     { id: 'savings-goal', label: '貯金目標', icon: '💰' },
     { id: 'subscription', label: 'サブスク', icon: '📱' },
@@ -119,6 +125,12 @@
         <NetSalaryCalculator />
       {:else if $activeTab === 'furusato'}
         <FurusatoTaxCalculator />
+      {:else if $activeTab === 'card-rewards'}
+        <CreditCardRewardsCalculator />
+      {:else if $activeTab === 'loan-refinancing'}
+        <LoanRefinancingCalculator />
+      {:else if $activeTab === 'fire'}
+        <FIRECalculator />
       {/if}
     </div>
   </div>
