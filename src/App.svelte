@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { recentTabs } from './lib/historyStore.js';
   import UnitPriceCalculator from './components/UnitPriceCalculator.svelte';
@@ -17,6 +18,10 @@
   import CreditCardRewardsCalculator from './components/CreditCardRewardsCalculator.svelte';
   import LoanRefinancingCalculator from './components/LoanRefinancingCalculator.svelte';
   import FIRECalculator from './components/FIRECalculator.svelte';
+  import MedicalDeductionCalculator from './components/MedicalDeductionCalculator.svelte';
+  import BusinessIncomeCalculator from './components/BusinessIncomeCalculator.svelte';
+  import TaxFilingChecker from './components/TaxFilingChecker.svelte';
+  import WithholdingSlipAnalyzer from './components/WithholdingSlipAnalyzer.svelte';
   import MoreFeaturesModal from './components/MoreFeaturesModal.svelte';
 
   const activeTab = writable('unit-price');
@@ -33,9 +38,13 @@
 
   // その他の機能（モーダルに表示）
   const moreFeatures = [
+    { id: 'withholding-slip', label: '源泉徴収票分析', icon: '📄' },
     { id: 'card-rewards', label: 'カード還元率比較', icon: '💳' },
     { id: 'fire', label: 'FIRE計算', icon: '🔥' },
     { id: 'loan-refinancing', label: 'ローン借り換え', icon: '🔄' },
+    { id: 'medical-deduction', label: '医療費控除', icon: '💊' },
+    { id: 'business-income', label: '事業所得計算', icon: '📊' },
+    { id: 'tax-filing-checker', label: '確定申告チェック', icon: '✅' },
     { id: 'hourly-wage', label: '時給換算', icon: '⏱️' },
     { id: 'savings-goal', label: '貯金目標', icon: '💰' },
     { id: 'subscription', label: 'サブスク', icon: '📱' },
@@ -60,6 +69,17 @@
     setTab(featureId);
     showMoreModal = false;
   }
+
+  // カスタムイベントリスナー（他のコンポーネントからのタブ切り替え）
+  onMount(() => {
+    const handleChangeTab = (event) => {
+      setTab(event.detail);
+    };
+    window.addEventListener('changeTab', handleChangeTab);
+    return () => {
+      window.removeEventListener('changeTab', handleChangeTab);
+    };
+  });
 </script>
 
 <main>
@@ -131,6 +151,14 @@
         <LoanRefinancingCalculator />
       {:else if $activeTab === 'fire'}
         <FIRECalculator />
+      {:else if $activeTab === 'medical-deduction'}
+        <MedicalDeductionCalculator />
+      {:else if $activeTab === 'business-income'}
+        <BusinessIncomeCalculator />
+      {:else if $activeTab === 'tax-filing-checker'}
+        <TaxFilingChecker />
+      {:else if $activeTab === 'withholding-slip'}
+        <WithholdingSlipAnalyzer />
       {/if}
     </div>
   </div>
